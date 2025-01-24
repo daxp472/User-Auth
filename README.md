@@ -119,3 +119,13 @@ The API returns appropriate error messages and status codes:
 - Input validation and sanitization
 - Unique email and username constraints
 - Secure password comparison
+
+## Dependencies
+- `express`: Web framework
+- `mongoose`: MongoDB object modeling
+- `bcryptjs`: Password hashing
+- `jsonwebtoken`: JWT token generation
+- `express-validator`: Input validation
+- `dotenv`: Environment variable loader
+- `mongoose-unique-validator`: Unique constraint validation
+
