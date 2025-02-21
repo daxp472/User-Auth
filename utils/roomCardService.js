@@ -32,7 +32,6 @@ const getAvailableRoomCards = async (userId) => {
 
 // Use a room card
 const useRoomCard = async (userId) => {
-  // Find the first available room card
   const card = await RoomCard.findOne({
     userId,
     isUsed: false,
@@ -43,34 +42,17 @@ const useRoomCard = async (userId) => {
     throw new Error('No available room cards');
   }
 
-  // Update the card
   card.isUsed = true;
   await card.save();
 
-  // Update user's room card count
   await User.findByIdAndUpdate(userId, { $inc: { roomCardsCount: -1 } });
 
   return card;
 };
 
-// Add reward room cards
-const addRewardRoomCards = async (userId, count, type = 'basic') => {
-  const cards = [];
-  for (let i = 0; i < count; i++) {
-    cards.push({
-      userId,
-      type,
-      expiresAt: dayjs().add(ROOM_EXPIRY_HOURS, 'hour').toDate()
-    });
-  }
-  
-  await RoomCard.insertMany(cards);
-  await User.findByIdAndUpdate(userId, { $inc: { roomCardsCount: count } });
-};
-
 // Get room cards status
 const getRoomCardsStatus = async (userId) => {
-  const [total, available, used, expired] = await Promise.all([
+  const [total, available, used] = await Promise.all([
     RoomCard.countDocuments({ userId }),
     RoomCard.countDocuments({ 
       userId, 
@@ -80,18 +62,13 @@ const getRoomCardsStatus = async (userId) => {
     RoomCard.countDocuments({ 
       userId, 
       isUsed: true 
-    }),
-    RoomCard.countDocuments({ 
-      userId,
-      expiresAt: { $lte: new Date() }
     })
   ]);
 
   return {
     total,
     available,
-    used,
-    expired
+    used
   };
 };
 
@@ -99,6 +76,5 @@ module.exports = {
   createInitialRoomCards,
   getAvailableRoomCards,
   useRoomCard,
-  addRewardRoomCards,
   getRoomCardsStatus
 };

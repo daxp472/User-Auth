@@ -4,7 +4,6 @@ const auth = require('../middleware/auth');
 const {
   getAvailableRoomCards,
   useRoomCard,
-  addRewardRoomCards,
   getRoomCardsStatus
 } = require('../utils/roomCardService');
 
@@ -45,20 +44,6 @@ router.post('/use', auth, async (req, res) => {
     } else {
       res.status(500).json({ error: 'Server error' });
     }
-  }
-});
-
-// Add reward room cards (protected admin route - you'll need to add admin middleware)
-router.post('/reward', auth, async (req, res) => {
-  try {
-    const { userId, count, type } = req.body;
-    await addRewardRoomCards(userId, count, type);
-    res.json({
-      message: `${count} ${type} room cards added successfully`
-    });
-  } catch (error) {
-    console.error('Error adding reward room cards:', error);
-    res.status(500).json({ error: 'Server error' });
   }
 });
 
