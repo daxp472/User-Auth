@@ -1,6 +1,6 @@
 # GameZone Authentication API
 
-This is the authentication API for the GameZone application. It provides user registration and login functionality with secure password handling and JWT token-based authentication.
+This is the authentication API for the GameZone application. It provides user registration, login functionality, and room management with secure password handling and JWT token-based authentication.
 
 ## Features
 
@@ -10,10 +10,14 @@ This is the authentication API for the GameZone application. It provides user re
 - JWT token-based authentication
 - Input validation
 - MongoDB database integration
+- Email notifications
+- Room Cards Management System
 
 ## API Endpoints
 
-### Signup
+### Authentication
+
+#### Signup
 - **URL**: `/api/auth/signup`
 - **Method**: `POST`
 - **Request Body**:
@@ -37,12 +41,13 @@ This is the authentication API for the GameZone application. It provides user re
       "id": "user-id",
       "name": "user-name",
       "username": "username",
-      "email": "user-email"
+      "email": "user-email",
+      "roomCardsCount": 10
     }
   }
   ```
 
-### Login
+#### Login
 - **URL**: `/api/auth/login`
 - **Method**: `POST`
 - **Request Body**:
@@ -61,10 +66,94 @@ This is the authentication API for the GameZone application. It provides user re
       "id": "user-id",
       "name": "user-name",
       "username": "username",
-      "email": "user-email"
+      "email": "user-email",
+      "roomCardsCount": 10
     }
   }
   ```
+
+### Room Cards Management
+
+#### Get Room Cards Status
+- **URL**: `/api/room-cards/status`
+- **Method**: `GET`
+- **Auth**: Required
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "total": 10,
+    "available": 8,
+    "used": 1,
+    "expired": 1
+  }
+  ```
+
+#### Get Available Room Cards
+- **URL**: `/api/room-cards/available`
+- **Method**: `GET`
+- **Auth**: Required
+- **Success Response**: `200 OK`
+  ```json
+  [
+    {
+      "id": "card-id",
+      "type": "basic",
+      "isUsed": false,
+      "expiresAt": "timestamp"
+    }
+  ]
+  ```
+
+#### Use Room Card
+- **URL**: `/api/room-cards/use`
+- **Method**: `POST`
+- **Auth**: Required
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "message": "Room card used successfully",
+    "card": {
+      "id": "card-id",
+      "type": "basic",
+      "isUsed": true,
+      "expiresAt": "timestamp"
+    }
+  }
+  ```
+
+#### Add Reward Room Cards (Admin Only)
+- **URL**: `/api/room-cards/reward`
+- **Method**: `POST`
+- **Auth**: Required (Admin)
+- **Request Body**:
+  ```json
+  {
+    "userId": "string",
+    "count": "number",
+    "type": "basic|premium|vip"
+  }
+  ```
+- **Success Response**: `200 OK`
+  ```json
+  {
+    "message": "5 basic room cards added successfully"
+  }
+  ```
+
+## Room Cards System
+
+### Features
+- Each new user receives 10 basic room cards on signup
+- Room cards expire after 3 hours from creation
+- Each room creation consumes one room card
+- Users can earn additional cards through rewards
+- Cards can be of type: basic, premium, or vip
+- Real-time tracking of card status (available, used, expired)
+
+### Card States
+- Available: Not used and not expired
+- Used: Consumed for room creation
+- Expired: Past the 3-hour validity period
 
 ## Setup Instructions
 
@@ -78,6 +167,8 @@ This is the authentication API for the GameZone application. It provides user re
    PORT=3000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret_key
+   EMAIL_USER=your_email
+   EMAIL_PASS=your_email_app_password
    ```
 
 3. Start the server:
@@ -119,13 +210,4 @@ The API returns appropriate error messages and status codes:
 - Input validation and sanitization
 - Unique email and username constraints
 - Secure password comparison
-
-## Dependencies
-- `express`: Web framework
-- `mongoose`: MongoDB object modeling
-- `bcryptjs`: Password hashing
-- `jsonwebtoken`: JWT token generation
-- `express-validator`: Input validation
-- `dotenv`: Environment variable loader
-- `mongoose-unique-validator`: Unique constraint validation
-
+- Protected room card management endpoints
