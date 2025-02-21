@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { sendWelcomeEmail } = require('../utils/emailService');
+const { createInitialRoomCards } = require('../utils/roomCardService');
 
 // Signup validation middleware
 const signupValidation = [
@@ -60,6 +61,9 @@ router.post('/signup', signupValidation, async (req, res) => {
 
     await user.save();
 
+    // Create initial room cards for the user
+    await createInitialRoomCards(user._id);
+
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
@@ -82,7 +86,8 @@ router.post('/signup', signupValidation, async (req, res) => {
         id: user._id,
         name: user.name,
         username: user.username,
-        email: user.email
+        email: user.email,
+        roomCardsCount: 10 // Initial room cards count
       }
     });
   } catch (error) {
@@ -143,7 +148,8 @@ router.post('/login',
           id: user._id,
           name: user.name,
           username: user.username,
-          email: user.email
+          email: user.email,
+          roomCardsCount: user.roomCardsCount
         }
       });
     } catch (error) {
