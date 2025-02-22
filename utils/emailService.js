@@ -61,6 +61,56 @@ const sendWelcomeEmail = async (userEmail, userName) => {
   }
 };
 
+const sendPasswordResetOTP = async (userEmail, userName, otp) => {
+  const mailOptions = {
+    from: {
+      name: 'GameZone HQ',
+      address: process.env.EMAIL_USER
+    },
+    to: userEmail,
+    subject: 'Password Reset OTP - GameZone',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2C3E50; margin-bottom: 10px;">Password Reset Request 🔐</h1>
+        </div>
+        
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+          <p style="color: #2C3E50; font-size: 16px; line-height: 1.6;">Dear ${userName},</p>
+          
+          <p style="color: #2C3E50; font-size: 16px; line-height: 1.6;">We received a request to reset your GameZone account password. Here's your OTP:</p>
+          
+          <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+            <h2 style="color: #2C3E50; margin: 0; letter-spacing: 5px;">${otp}</h2>
+          </div>
+          
+          <p style="color: #2C3E50; font-size: 16px; line-height: 1.6;">This OTP is valid for 60 minutes. If you didn't request this password reset, please ignore this email.</p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <p style="color: #2C3E50; font-size: 16px; line-height: 1.6;">For security reasons, please do not share this OTP with anyone.</p>
+          
+          <p style="color: #2C3E50; font-size: 16px; line-height: 1.6;">Best regards,<br>The GameZone Team</p>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
+          <p>This email was sent to ${userEmail}. If you didn't request a password reset, please ignore this email.</p>
+          <p>GameZone HQ • Your Ultimate Gaming Destination</p>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Password reset OTP email sent successfully');
+  } catch (error) {
+    console.error('Error sending password reset OTP email:', error);
+    throw error;
+  }
+};
+
 module.exports = {
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendPasswordResetOTP
 };
