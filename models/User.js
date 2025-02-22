@@ -23,10 +23,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  profilePicture: {
-    type: String,
-    default: ''
-  },
   gender: {
     type: String,
     required: true,
@@ -36,28 +32,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  age: {
-    type: Number,
-    default: 0
-  },
-  bio: {
-    type: String,
-    default: '',
-    maxLength: 500
-  },
   roomCardsCount: {
     type: Number,
     default: 0
-  },
-  resetPasswordOTP: {
-    code: {
-      type: String,
-      default: null
-    },
-    expiresAt: {
-      type: Date,
-      default: null
-    }
   },
   createdAt: {
     type: Date,
